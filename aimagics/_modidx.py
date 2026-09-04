@@ -5,4 +5,9 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://adrische.github.io',
                 'git_url': 'https://github.com/adrische/aimagics',
                 'lib_path': 'aimagics'},
-  'syms': {'aimagics.core': {'aimagics.core.foo': ('core.html#foo', 'aimagics/core.py')}}}
+  'syms': { 'aimagics.core': { 'aimagics.core.AIMagics': ('core.html#aimagics', 'aimagics/core.py'),
+                               'aimagics.core.AIMagics.ai': ('core.html#aimagics.ai', 'aimagics/core.py'),
+                               'aimagics.core.adisplay_stream_own': ('core.html#adisplay_stream_own', 'aimagics/core.py'),
+                               'aimagics.core.cell_magic_dummy_character': ('core.html#cell_magic_dummy_character', 'aimagics/core.py'),
+                               'aimagics.core.get_context': ('core.html#get_context', 'aimagics/core.py'),
+                               'aimagics.core.line_magic_quotes': ('core.html#line_magic_quotes', 'aimagics/core.py')}}}

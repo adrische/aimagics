@@ -15,7 +15,15 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = []
+dependencies = [
+    "fastcore",
+    "IPython",
+    "nbformat",
+    "ipynbname",
+    "traitlets",
+    "aidialog",
+    "fastllm",
+]
 
 [project.urls]
 Repository = "https://github.com/adrische/aimagics"
@@ -31,3 +39,4 @@ version = {attr = "aimagics.__version__"}
 include = ["aimagics"]
 
 [tool.nbdev]
+export_procs = []
