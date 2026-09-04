@@ -23,6 +23,7 @@ dependencies = [
     "traitlets>=5.14.3",
     "aidialog>=0.0.23",
     "python-fastllm>=0.0.49",
+    "nbdev>=3.3.15"
 ]
 
 [project.urls]
