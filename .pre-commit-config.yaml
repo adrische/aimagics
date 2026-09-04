@@ -1,0 +1,6 @@
+repos:
+- repo: https://github.com/fastai/nbdev
+  rev: 3.3.15
+  hooks:
+  - id: nbdev-clean
+  - id: nbdev-export
