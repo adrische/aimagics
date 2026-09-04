@@ -12,3 +12,5 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps: [uses: answerdotai/workflows/quarto-ghp3@master]
+      env:
+        OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
