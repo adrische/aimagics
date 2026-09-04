@@ -16,13 +16,13 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
-    "fastcore",
+    "fastcore>=2.2.19",
     "IPython",
-    "nbformat",
-    "ipynbname",
-    "traitlets",
-    "aidialog",
-    "fastllm",
+    "nbformat>=5.11.1",
+    "ipynbname>=2025.8.0.0",
+    "traitlets>=5.14.3",
+    "aidialog>=0.0.23",
+    "python-fastllm>=0.0.49",
 ]
 
 [project.urls]
