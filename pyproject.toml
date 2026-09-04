@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aimagics"
+dynamic = ["version"]
+description = "LLM access from within Jupyter notebooks via line and cell magic commands"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "adrische", email = "adrianscheerer@gmail.com"}]
+keywords = ['nbdev']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/adrische/aimagics"
+Documentation = "https://adrische.github.io/aimagics/"
+
+[project.entry-points.nbdev]
+aimagics = "aimagics._modidx:d"
+
+[tool.setuptools.dynamic]
+version = {attr = "aimagics.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["aimagics"]
+
+[tool.nbdev]

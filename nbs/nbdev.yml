@@ -1,0 +1,14 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "aimagics"
+  site-url: "https://adrische.github.io/aimagics"
+  description: "LLM access from within Jupyter notebooks via line and cell magic commands"
+  repo-branch: main
+  repo-url: "https://github.com/adrische/aimagics"
+
+format-links:
+  - html
+  - format: commonmark
+    text: Markdown
