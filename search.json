@@ -1,0 +1,62 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "This page is rather short, as there are no public facing exports.\nYou can get help on the usage of %ai and %%ai with\n\n%ai?\n\nDocstring:\nPrompt an LLM as magic command.\n\n- Can be used as \n  %ai prompt\n- or as \n  %%ai prompt\n  code \n  and other text in the cell\nFile:      ~/Documents/small-projects/aimagics-repo/aimagics/aimagics/core.py",
+    "crumbs": [
+      "core"
+    ]
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "aimagics",
+    "section": "Installation",
+    "text": "Installation\nThis package can be installed with pip via\n$ pip install aimagics",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#setup",
+    "href": "index.html#setup",
+    "title": "aimagics",
+    "section": "Setup",
+    "text": "Setup\n\n1. Load the package\nAfter installation, you can load the package in Jupyter and ipython with\n%load_ext aimagics\nWhether the package has been loaded can be checked with\n\nfrom IPython import get_ipython\nget_ipython().extension_manager.loaded\n\n{'IPython.extensions.storemagic', 'aimagics'}\n\n\n‘aimagics’ should appear in the output.\n\n\n2. Set LLM API key\nYou should set your environment API key to your favorite LLM provider. The default model is\n\nAIMagics().model\n\n'openrouter/openai/gpt-oss-120b'\n\n\nso the environment key needed is OPENROUTER_API_KEY.\nAll LiteLLM models are compatible.\n\n\n3. Turn auto save on\nThe package works by retrieving the current notebook from disk. To always get the current state, it is recommended to turn auto save on. This is the default in jupyter notebooks, and can be toggled in vscode via Show and Run Commands &gt; File: Toggle Auto Save.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "aimagics",
+    "section": "Usage",
+    "text": "Usage\nThe package exposes two commands: %ai and %%ai. These are so-called ‘line’ and ‘cell magics’ and can be used as follows:\n\nLine magic\nThe command %ai processes what comes after on the same line as request to the LLM:\n\n%ai What is aimagics?\n\naimagics is a Python package and IPython extension that brings Large Language Model (LLM) capabilities directly into Jupyter notebooks via magic commands.\n\nKey Features:\n\nMagic Commands: Offers %ai (line magic) and %%ai (cell magic) to interact with models directly within code cells.\nContext-Aware: Reads the current notebook state from disk to provide context-aware responses to your code and markdown.\nBroad Model Support: Built on LiteLLM, allowing you to connect to OpenRouter, OpenAI, Anthropic, and dozens of other LLM providers.\n\n\n\n\n\n\nCell magic\nThe command %%ai processes what comes after it on the same line, but also what is in the same cell below it:\n\n%%ai Why does the following code fail?\n1/0\n\n\nAnswer\n1/0\nfails because it raises a ZeroDivisionError. In Python (and mathematics), division by zero is undefined, so attempting to compute 1 / 0 triggers this exception:\nZeroDivisionError: division by zero\nTo avoid the error, ensure the denominator is never zero, e.g.:\ndenominator = 2  # any non‑zero value\nresult = 1 / denominator\n\n\nBy default, the entire notebook up to and including the calling cell is included in the prompt as context.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#configuration",
+    "href": "index.html#configuration",
+    "title": "aimagics",
+    "section": "Configuration",
+    "text": "Configuration\nThe possible configuration options can be viewed with\n%config AIMagics\n\n\nAIMagics(Magics) options\n----------------------\nAIMagics.model=&lt;Unicode&gt;\n    Provider/model to be used.\n    Current: 'openrouter/openai/gpt-oss-120b'\nAIMagics.system_prompt=&lt;Unicode&gt;\n    The system prompt prepended to any prompt and context.\n    Current: \"You are a helpful assistant living inside a user's Jupyter notebook. \\n        Use markdown syntax for styling your responses.\\n        Keep your responses brief and to the point.\\n\"\n\n\nFor example, you can change the model with\n%config AIMagics.model = \"openrouter/google/gemini-3.8-flash\"\n\n%ai what model are you?\n\nI am Gemini (specifically configured as openrouter/google/gemini-3.8-flash), a large language model trained by Google.\n\n\n\nDocumentation\nDocumentation can be found hosted on this GitHub repository’s pages. Additionally you can find package manager specific guidelines on conda and pypi respectively.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "aimagics",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis repository would not be possible without the FastAI / AnswerAI open source packages, in particular FastLLM. AnswerAI even have a dedicated platform for notebooks with AI integration: SolveIt.\nThere are a number of packages implementing basically the same ideas (just much better):\n\nAnswerDotAI/ai-jup An extension for Jupyter Lab\nAnswerDotAI/ipyai An extension of IPython in the terminal\nhttps://nathancooper.io/blog/2026-08-10-ipython-is-all-you-need An excellent blog post implementing these ideas much better for ipython.\n\nDuring the finishing stages I also found https://pypi.org/project/aimagic/ on PyPi, which is also a package by AnswerAI and basically what I am implementing here, even with the same syntax and the same name, just for Jupyter (relying on Javascript to get the cells for context).",
+    "crumbs": [
+      "aimagics"
+    ]
+  }
+]
