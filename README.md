@@ -7,19 +7,7 @@
 
 ## Installation
 
-Install latest from the GitHub [repository](https://github.com/adrische/aimagics):
-
-``` sh
-$ pip install git+https://github.com/adrische/aimagics.git
-```
-
-or from [conda](https://anaconda.org/adrische/aimagics)
-
-``` sh
-$ conda install -c adrische aimagics
-```
-
-or from [pypi](https://pypi.org/project/aimagics/)
+This package can be installed with pip via
 
 ``` sh
 $ pip install aimagics
@@ -158,4 +146,4 @@ There are a number of packages implementing basically the same ideas (just much 
 - [AnswerDotAI/ipyai](https://github.com/AnswerDotAI/ipyai) An extension of IPython in the terminal
 - <https://nathancooper.io/blog/2026-08-10-ipython-is-all-you-need> An excellent blog post implementing these ideas much better for ipython.
 
-During the finishing stages I also found https://pypi.org/project/aimagic/ on PyPi, which is basically what I am implementing here, even with the same syntax and the same name, just for Jupyter (relying on Javascript to get the cells for context).
+During the finishing stages I also found <https://pypi.org/project/aimagic/> on PyPi, which is also a package by AnswerAI and basically what I am implementing here, even with the same syntax and the same name, just for Jupyter (relying on Javascript to get the cells for context).
