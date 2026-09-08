@@ -3,3 +3,4 @@ website:
     contents:
       - index.ipynb
       - 0_core.ipynb
+      - 1_utils.ipynb
