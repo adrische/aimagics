@@ -11,6 +11,8 @@ d = { 'settings': { 'branch': 'main',
                                'aimagics.core.cell_magic_dummy_character': ('core.html#cell_magic_dummy_character', 'aimagics/core.py'),
                                'aimagics.core.get_context': ('core.html#get_context', 'aimagics/core.py'),
                                'aimagics.core.line_magic_quotes': ('core.html#line_magic_quotes', 'aimagics/core.py')},
+            'aimagics.systemprompt': {},
             'aimagics.utils': { 'aimagics.utils.add_cell': ('utils.html#add_cell', 'aimagics/utils.py'),
                                 'aimagics.utils.add_cells': ('utils.html#add_cells', 'aimagics/utils.py'),
+                                'aimagics.utils.split_into_cells': ('utils.html#split_into_cells', 'aimagics/utils.py'),
                                 'aimagics.utils.split_markdown': ('utils.html#split_markdown', 'aimagics/utils.py')}}}

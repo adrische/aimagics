@@ -4,3 +4,4 @@ website:
       - index.ipynb
       - 0_core.ipynb
       - 1_utils.ipynb
+      - 9_system_prompt.ipynb

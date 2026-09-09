@@ -8,10 +8,13 @@ __all__ = []
 # %% ../nbs/0_core.ipynb #aa35d777
 from IPython import get_ipython
 from IPython.core.magic import magics_class, Magics, line_cell_magic
+from IPython.display import clear_output, display, Markdown
 import nbformat, ipynbname
 from traitlets import Unicode
 from aidialog.msg_parts import Text, Msg
 from fastllm.chat import StreamAccum, acomplete
+from .systemprompt import sp
+from .utils import split_into_cells, add_cells
 
 # %% ../nbs/0_core.ipynb #c93523a0
 @magics_class
@@ -30,10 +33,14 @@ class AIMagics(Magics):
         help="Provider/model to be used."
     ).tag(config=True)
 
+    # system_prompt = Unicode(
+    #     """You are a helpful assistant living inside a user's Jupyter notebook. 
+    #     Use markdown syntax for styling your responses.
+    #     Keep your responses brief and to the point.\n""",
+    #     help="The system prompt prepended to any prompt and context."
+    # ).tag(config=True)
     system_prompt = Unicode(
-        """You are a helpful assistant living inside a user's Jupyter notebook. 
-        Use markdown syntax for styling your responses.
-        Keep your responses brief and to the point.\n""",
+        sp,
         help="The system prompt prepended to any prompt and context."
     ).tag(config=True)
 
@@ -58,6 +65,12 @@ class AIMagics(Magics):
         msg = Msg('user', [Text(final_prompt)]) # TODO correct and better message history, TODO handle system prompt correctly, TODO tools
         rs = await acomplete([msg], model=self.model, stream=True)
         fmt = await adisplay_stream_own(rs)
+
+        # post-processes md: strips code and adds as code cells at the end, with references from the md
+        md, cs = split_into_cells(fmt)
+        clear_output(wait=True)
+        display(Markdown("".join(md)))
+        add_cells(cs)
 
 # %% ../nbs/0_core.ipynb #b96a782b
 def line_magic_quotes(lines):
