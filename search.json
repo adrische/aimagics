@@ -1,0 +1,112 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "This page is rather short, as there are no public facing exports.\nYou can get help on the usage of %ai and %%ai with\n\n%ai?\n\nDocstring:\nPrompt an LLM as magic command.\n\n- Can be used as \n  %ai prompt\n- or as \n  %%ai prompt\n  code \n  and other text in the cell\nFile:      ~/Documents/small-projects/aimagics-repo/aimagics/aimagics/core.py",
+    "crumbs": [
+      "core"
+    ]
+  },
+  {
+    "objectID": "utils.html",
+    "href": "utils.html",
+    "title": "utils",
+    "section": "",
+    "text": "We would like to add some cells programmatically. There seem to be some limitations given by the design of Jupyter; basically the file on disk, the kernel, and the frontend are different things. The following “payload” approach seems to be the only way to create a new cell without writing extensions for different frontends. However, this approach seems to be at risk of deprecation.\nsource\n\nadd_cell\ndef add_cell(\n    content:str, single:bool=False, # If True, overwrites (updates) newly created cell when called multiple times.\n):\nAdd a new cell below the calling cell once overall execution of the cell finishes.\n\n\nParameters\nsingle : int If True, overwrites (updates) newly created cell when called multiple times.\nadd_cell(\"# Hi\")\n# Hi\n# with single = True, the new cell will be updated (overwritten)\nadd_cell(\"# first\", single=True)\nadd_cell(\"# second\", single=True)\n# second\nsource\n\nadd_cells\ndef add_cells(\n    contents:list[str], # The contents to be placed in the new cells.\n):\nAdds several cells below the calling cells once excution of the current cell finishes\nadd_cells([\"# Hi\", \"# there\"])\n# Hi\n# there\nadd_cells([]) # This should not do anything\nThe calls to the payload manager are scheduled and executed in order after the cell execution finishes.\nadd_cell(\"# first\")\nadd_cell(\"# second\")\n# second\n# first\nThis means if you don’t reverse the desired output order, cells will be in the wrong order. The last cell needs to be added (scheduled) first. This makes streaming impossible - you need to know the end first. You can only post-process fully received output.\nLet’s post-process markdown strings - add one cell per header (up to a certain level). This is helpful to split up long texts in small logical chunks, e.g., when importing a paper to Jupyter.\nsource\n\nsplit_markdown\ndef split_markdown(\n    md:str, max_level:int=6\n)-&gt;list[str]:\nSplits a markdown formatted string at headers\nLet’s assign a long_string to demonstrate a use case:\nlong_string = \"\"\"# Cell 1\nThis is the content for the first cell.\n\n## Section 2\n\nIf `max_level` is larger than 1, this section will be its own cell.\n\n# Final cell\nA last top-level cell with `# some comment`.\n\"\"\"\nassert len(split_markdown(long_string, max_level=2)) == 3\nThe long document can then be added as individual cells like this:\nadd_cells(split_markdown(long_string, max_level=4))",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "utils.html#parameters",
+    "href": "utils.html#parameters",
+    "title": "utils",
+    "section": "Parameters",
+    "text": "Parameters\nsingle : int If True, overwrites (updates) newly created cell when called multiple times.",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "utils.html#section-2",
+    "href": "utils.html#section-2",
+    "title": "utils",
+    "section": "Section 2",
+    "text": "Section 2\nIf max_level is larger than 1, this section will be its own cell.",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "system_prompt.html",
+    "href": "system_prompt.html",
+    "title": "The system prompt",
+    "section": "",
+    "text": "Prefix\nstr instance: \"You are a helpful assistant living inside a user's Jupyter notebook.\\n    The …\nYou are a helpful assistant living inside a user’s Jupyter notebook. The user is generally interested in how things work, why, and to try them out immediately. Use markdown syntax for styling your responses. Keep your responses brief and to the point, they should fit in a few cells at most. Your response will be post-processed: Fenced code will be split out and appended at the end as code cells.\n\n\n\n\n\nStyle guide\nstr instance: '\\nFollow the **fast.ai coding style**.\\nIts core philosophy stems from Kenneth…\nFollow the fast.ai coding style. Its core philosophy stems from Kenneth Iverson’s maxim: “Brevity facilitates reasoning.” By minimizing unnecessary vertical space, developers can see entire functions or algorithms in a single screen view without scrolling.\nThe key tenets include:\n\n\n\nLayout and Vertical Economy\n\nOne Line, One Idea: Fit complete simple statements onto a single line rather than breaking them across multiple lines.\nSingle-statement conditions: if not data: return None\nSingle-line functions: def foo(x): return x * 2\nSingle-line imports: import os, sys, pathlib\nNo Artificial Line Breaks: Don’t split argument lists, list literals, or dictionary definitions across vertical lines unless they genuinely exceed horizontal space.\nDestructuring Assignment: Group self attribute initializers together:\n\nself.x, self.y, self.z = x, y, z\n\nWide Screens Over 79/88 Chars: Fast.ai allows line lengths around 160 characters to accommodate modern monitors rather than adhering to rigid, narrow limits.\nVisual Alignment: Group related 1-liners without blank lines between them, and align similar statement structures so the eye spots pattern differences immediately.\n\n\n\n\nNaming and Abbreviations\nFast.ai uses a combination of Huffman Coding and the Life-Cycle Naming Principle:\n\n\n\n\n\n\n\n\nScope / Lifecycle\nRule\nExamples\n\n\n\n\nShort-lived (lambdas, list comprehensions, tight loops)\nAggressive 1-2 letter abbreviations\nx (input), y (target), o (generic object), i (index), f (function)\n\n\nMedium-lived (local variables, function arguments)\nStandard domain abbreviations\nlr (learning rate), bs (batch size), sz (size), tfms (transforms)\n\n\nLong-lived (public classes, exported modules)\nFull words, light or no abbreviations\nLearner, DataLoaders, Transform\n\n\n\n\n\n\nSystematic Affixes\nFast.ai relies on uniform affixes across the entire library:\n\nPlurals / Collections (s): xs, ys, tfms\nCounts (n_ or num_): n_epochs, n_layers, num_features\nBoolean checks (is_): is_tuple, is_valid\nConversions (2 / to_): to_device(), name2idx()\n\n\n\n\nIdioms & Performance\n\nVectorization Over Loops: Rely on PyTorch/NumPy broadcasting and tensor indexing rather than Python loops.\nDomain-Specific Spacing: Match mathematical notation. Omit spaces around operators where tight grouping reflects arithmetic priority or domain convention (e.g., path/filename without padding /).\nNo Generic Auto-Formatters: Traditional tools like Black or Flake8 violate fast.ai’s density principles and are intentionally avoided in fastai projects.",
+    "crumbs": [
+      "The system prompt"
+    ]
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "aimagics",
+    "section": "Installation",
+    "text": "Installation\nThis package can be installed with pip via\n$ pip install aimagics",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#setup",
+    "href": "index.html#setup",
+    "title": "aimagics",
+    "section": "Setup",
+    "text": "Setup\n\n1. Load the package\nAfter installation, you can load the package in Jupyter and ipython with\n%load_ext aimagics\nor with\n\nimport aimagics\n\nWhether the package has been loaded can be checked with\n\nfrom IPython import get_ipython\nget_ipython().extension_manager.loaded\n\n{'IPython.extensions.storemagic', 'aimagics'}\n\n\n‘aimagics’ should appear in the output.\n\n\n2. Set LLM API key\nYou should set your environment API key to your favorite LLM provider. The default model is\n\nAIMagics().model\n\n'openrouter/openai/gpt-oss-120b'\n\n\nso the environment key needed is OPENROUTER_API_KEY.\nAll LiteLLM models are compatible.\n\n\n3. Turn auto save on\nThe package works by retrieving the current notebook from disk. To always get the current state, it is recommended to turn auto save on. This is the default in jupyter notebooks, and can be toggled in vscode via Show and Run Commands &gt; File: Toggle Auto Save.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "aimagics",
+    "section": "Usage",
+    "text": "Usage\nThe package exposes two commands: %ai and %%ai. These are so-called ‘line’ and ‘cell magics’ and can be used as follows:\n\nLine magic\nThe command %ai processes what comes after on the same line as request to the LLM:\n\n%ai What is aimagics?\n\naimagics is a Python package and IPython extension that brings Large Language Model (LLM) capabilities directly into Jupyter notebooks via magic commands.\n\nKey Features:\n\nMagic Commands: Offers %ai (line magic) and %%ai (cell magic) to interact with models directly within code cells.\nContext-Aware: Reads the current notebook state from disk to provide context-aware responses to your code and markdown.\nBroad Model Support: Built on LiteLLM, allowing you to connect to OpenRouter, OpenAI, Anthropic, and dozens of other LLM providers.\n\n\n\n\n\n\nCell magic\nThe command %%ai processes what comes after it on the same line, but also what is in the same cell below it:\n\n%%ai Why does the following code fail?\n1/0\n\n\nAnswer\n1/0\nfails because it raises a ZeroDivisionError. In Python (and mathematics), division by zero is undefined, so attempting to compute 1 / 0 triggers this exception:\nZeroDivisionError: division by zero\nTo avoid the error, ensure the denominator is never zero, e.g.:\ndenominator = 2  # any non‑zero value\nresult = 1 / denominator\n\n\nBy default, the entire notebook up to and including the calling cell is included in the prompt as context.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#configuration",
+    "href": "index.html#configuration",
+    "title": "aimagics",
+    "section": "Configuration",
+    "text": "Configuration\nThe possible configuration options can be viewed with\n%config AIMagics\n\n\nAIMagics(Magics) options\n----------------------\nAIMagics.model=&lt;Unicode&gt;\n    Provider/model to be used.\n    Current: 'openrouter/openai/gpt-oss-120b'\nAIMagics.system_prompt=&lt;Unicode&gt;\n    The system prompt prepended to any prompt and context.\n    Current: \"You are a helpful assistant living inside a user's Jupyter notebook. \\n        Use markdown syntax for styling your responses.\\n        Keep your responses brief and to the point.\\n\"\n\n\nFor example, you can change the model with\n%config AIMagics.model = \"openrouter/google/gemini-3.8-flash\"\n\n%ai what model are you?\n\nI am Gemini (specifically configured as openrouter/google/gemini-3.8-flash), a large language model trained by Google.\n\n\n\nDocumentation\nDocumentation can be found hosted on this GitHub repository’s pages.  Additionally you can find package manager specific guidelines on pypi respectively.",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#use-cases",
+    "href": "index.html#use-cases",
+    "title": "aimagics",
+    "section": "Use cases",
+    "text": "Use cases\n\nInteractive coding\nYou can just ask away with %ai your question, the LLM will get the relevant context and can provide targeted answers. Good for iterative programming, studying, etc. See the screenshot above.\n\n\nInteractive document reading\nCode along with technical documents. By importing and splitting documents into Jupyter cells, you can read step-by-step and ask and try out code as you go.\nA possible workflow is to get documents (e.g., websites) to markdown format with Jina,\nhttps://r.jina.ai/www.the-website-you-want.com\nthen add markdown cells with\n\nfrom aimagics.utils import add_cells, split_markdown\nmd = \"\"\"[copy paste from Jina]\"\"\"\nadd_cells(split_markdown(md))\n\nIf you want to start from a notebook that has been prepopulated with cells from a markdown file, there are options such as Jupytext to convert a markdown file to ipynb that you can use as a starting point.\nFor example, you can translate an existing markdown file to ipynb such that each section gets its own cell by\njupytext --to ipynb --opt split_at_heading=true file.md",
+    "crumbs": [
+      "aimagics"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "aimagics",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis repository would not be possible without the FastAI / AnswerAI open source packages, in particular FastLLM. AnswerAI even have a dedicated platform for notebooks with AI integration: SolveIt.\nThere are a number of packages implementing basically the same ideas (just much better):\n\nAnswerDotAI/ai-jup An extension for Jupyter Lab\nAnswerDotAI/ipyai An extension of IPython in the terminal\nhttps://nathancooper.io/blog/2026-08-10-ipython-is-all-you-need An excellent blog post implementing these ideas much better for ipython.\n\nDuring the finishing stages I also found https://pypi.org/project/aimagic/ on PyPi, which is also a package by AnswerAI and basically what I am implementing here, even with the same syntax and the same name, just for Jupyter (relying on Javascript to get the cells for context).",
+    "crumbs": [
+      "aimagics"
+    ]
+  }
+]
