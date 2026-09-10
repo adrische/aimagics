@@ -43,7 +43,7 @@ def add_cells(contents: list[str]):
 def split_markdown(md: str, max_level: int = 6) -> list[str]:
     """Splits a markdown formatted string at headers"""
     try: from mdsplit import split_by_heading
-    except ModuleNotFoundError: raise ModuleNotFoundError("This function requires mdsplit, https://github.com/markusstraub/mdsplit. Please run `pip install mdsplit` to use.")
+    except ModuleNotFoundError: raise ModuleNotFoundError("This function requires mdsplit, https://github.com/markusstraub/mdsplit . Please run `pip install mdsplit` to use.")
 
     lines = md.splitlines(keepends=True) # keepends=True preserves original newline characters without alteration
     
