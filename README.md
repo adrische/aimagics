@@ -175,6 +175,31 @@ For example, you can translate an existing markdown file to ipynb such that each
 jupytext --to ipynb --opt split_at_heading=true file.md
 ```
 
+## Features
+
+### Automatic code-cell insertion
+
+LLM answers containing fenced code blocks (with \`\`\`) are automatically extracted and inserted as code cells below the LLM reply:
+
+``` python
+%ai how to reverse a list in one line?
+```
+
+**Answer**
+
+\[See code cell 1 below\]
+
+``` python
+# Code cell 1
+rev = lst[::-1]          # slice reversal
+# or
+rev = list(reversed(lst))  # using built‑in reversed()
+```
+
+### AGENTS.md
+
+If it exists in the same folder as the current notebook, the file `AGENTS.md` is being appended to the LLM call.
+
 ## Acknowledgements
 
 This repository would not be possible without the FastAI / AnswerAI open source packages, in particular [FastLLM](https://github.com/AnswerDotAI/fastllm). AnswerAI even have a dedicated platform for notebooks with AI integration: [SolveIt](https://solve.it.com/).

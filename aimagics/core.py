@@ -9,7 +9,7 @@ __all__ = []
 from IPython import get_ipython
 from IPython.core.magic import magics_class, Magics, line_cell_magic
 from IPython.display import clear_output, display, Markdown
-import nbformat, ipynbname
+import nbformat, ipynbname, os, warnings
 from traitlets import Unicode
 from aidialog.msg_parts import Text, Msg
 from fastllm.chat import StreamAccum, acomplete
@@ -58,9 +58,10 @@ class AIMagics(Magics):
         """
         line = line or ""
         prompt = line if cell is None else f"{line}\n{cell}".strip()
-
+        try: agentsmd = open(os.path.join(os.path.dirname(ipynbname.path()), "AGENTS.md")).read()
+        except: agentsmd = ""
         ctx = get_context()
-        final_prompt = f"{self.system_prompt}\n{ctx}\n{prompt}"
+        final_prompt = "\n".join([self.system_prompt, agentsmd, ctx, prompt])
 
         msg = Msg('user', [Text(final_prompt)]) # TODO correct and better message history, TODO handle system prompt correctly, TODO tools
         rs = await acomplete([msg], model=self.model, stream=True)
@@ -108,7 +109,13 @@ def get_context():
     def normalize(s):
         return s.strip().replace("'", "").replace('"', "") # becomes fuzzy matching basically
     normalized_source = normalize(source_of_calling_cell)
-    nb = nbformat.read(ipynbname.path(), as_version=4)
+
+    # There seems to be a vscode issue with autosaving that notebook cell id's are not assigned fast enough after modifying and executing a cell
+    # https://github.com/jupyter/nbformat/blob/4346f97c9d435f41ddfe76d28758b23796fdcf5a/nbformat/validator.py#L346
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        nb = nbformat.read(ipynbname.path(), as_version=4)
+        
     for i, cell in enumerate(nb['cells']):
         # there may be an error matching cells that have been modified by line_magic_quotes / cell_magic_dummy_character
         if cell['source'] == source_of_calling_cell or normalize(cell['source']) == normalized_source:
