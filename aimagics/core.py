@@ -9,10 +9,8 @@ __all__ = []
 from IPython import get_ipython
 from IPython.core.magic import magics_class, Magics, line_cell_magic
 from IPython.display import clear_output, display, Markdown
-import nbformat, ipynbname, os, warnings
+import nbformat, ipynbname, os, warnings, requests, json
 from traitlets import Unicode
-from aidialog.msg_parts import Text, Msg
-from fastllm.chat import StreamAccum, acomplete
 from .systemprompt import sp
 from .utils import split_into_cells, add_cells
 
@@ -24,21 +22,15 @@ class AIMagics(Magics):
     Can be configured with
     %config
     %config AIMagis
-    %config.model = "openrouter/google/gemini-3.8-flash"
+    %config AIMagics.model = "google/gemini-3.8-flash"
     """
 
     # The config values
     model = Unicode(
-        "openrouter/openai/gpt-oss-120b",
-        help="Provider/model to be used."
+        "~deepseek/deepseek-flash-latest",
+        help="Model to be used."
     ).tag(config=True)
 
-    # system_prompt = Unicode(
-    #     """You are a helpful assistant living inside a user's Jupyter notebook. 
-    #     Use markdown syntax for styling your responses.
-    #     Keep your responses brief and to the point.\n""",
-    #     help="The system prompt prepended to any prompt and context."
-    # ).tag(config=True)
     system_prompt = Unicode(
         sp,
         help="The system prompt prepended to any prompt and context."
@@ -60,15 +52,17 @@ class AIMagics(Magics):
         prompt = line if cell is None else f"{line}\n{cell}".strip()
         try: agentsmd = open(os.path.join(os.path.dirname(ipynbname.path()), "AGENTS.md")).read()
         except: agentsmd = ""
-        ctx = get_context()
+        ctx = get_context() # TODO correct and better message history, TODO handle system prompt correctly, TODO tools
         final_prompt = "\n".join([self.system_prompt, agentsmd, ctx, prompt])
 
-        msg = Msg('user', [Text(final_prompt)]) # TODO correct and better message history, TODO handle system prompt correctly, TODO tools
-        rs = await acomplete([msg], model=self.model, stream=True)
-        fmt = await adisplay_stream_own(rs)
+        h = display(Markdown('Processing request ...'), display_id=True) # Placeholder text
+        accum = ""
+        async for delta in stream_with_error_handling(final_prompt, self.model):
+            accum += delta
+            h.update(Markdown(accum))
 
         # post-processes md: strips code and adds as code cells at the end, with references from the md
-        md, cs = split_into_cells(fmt)
+        md, cs = split_into_cells(accum)
         clear_output(wait=True)
         display(Markdown("".join(md)))
         add_cells(cs)
@@ -123,14 +117,39 @@ def get_context():
     ctx = "\n".join([repr(cell) for cell in nb['cells'][:i+1]])
     return ctx
 
-# %% ../nbs/0_core.ipynb #f969491b
-async def adisplay_stream_own(rs, chat=None, mx=2000):
-    "Use IPython.display to markdown display the response stream, refreshing from `chat.full()` on `Refresh`."
-    try: from IPython.display import display, Markdown
-    except ModuleNotFoundError: raise ModuleNotFoundError("This function requires ipython. Please run `pip install ipython` to use.")
-    acc = StreamAccum(chat, mx=mx)
-    h = display(Markdown('Processing request ...'), display_id=True) # Placeholder text
-    async for o in rs:
-        if acc(o) and acc.txt: 
-            h.update(Markdown(acc.txt))
-    return acc.txt
+# %% ../nbs/0_core.ipynb #508602ef
+async def stream_with_error_handling(prompt, model):
+    response = requests.post(
+        'https://openrouter.ai/api/v1/responses',
+        headers={'Authorization': f'Bearer {os.environ['OPENROUTER_API_KEY']}'},
+        json={'model': model, 'input': prompt, 'stream': True},
+        stream=True
+    )
+
+    # Check initial HTTP status for pre-stream errors
+    if response.status_code != 200:
+        error_data = response.json()
+        yield f"Error: {error_data['error']['message']}"
+        
+    # Process stream and handle mid-stream errors
+    for line in response.iter_lines():
+        if line:
+            line_text = line.decode('utf-8')
+            if line_text.startswith('data: '):
+                data = line_text[6:]
+                if data == '[DONE]': break
+                try:
+                    parsed = json.loads(data)
+                    # Check for mid-stream errors
+                    if parsed.get('type') == 'response.failed':
+                        yield f"Stream error: {parsed['response']['error']['message']}\nStream terminated due to error\n"
+                    if parsed.get('type') == 'response.incomplete':
+                        details = parsed['response'].get('incomplete_details') or {}
+                        reason = details.get('reason', 'unknown reason')
+                        yield f"Stream incomplete: {reason}\n"
+                    if parsed.get('type') == 'error':
+                        yield f"Stream error: {parsed['message']}\n"
+                    # Process normal content
+                    if parsed.get('type') == 'response.output_text.delta':
+                        yield parsed['delta']
+                except json.JSONDecodeError: pass

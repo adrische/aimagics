@@ -41,19 +41,17 @@ get_ipython().extension_manager.loaded
 
 ‘aimagics’ should appear in the output.
 
-### 2. Set LLM API key
+### 2. Set OpenRouter API key and choose model
 
-You should set your environment API key to your favorite LLM provider. The default model is
+The default model is
 
 ``` python
 AIMagics().model
 ```
 
-    'openrouter/openai/gpt-oss-120b'
+    'openrouter/deepseek/deepseek-flash-latest'
 
-so the environment key needed is `OPENROUTER_API_KEY`.
-
-All [LiteLLM](https://models.litellm.ai/) models are compatible.
+and the environment key needed is `OPENROUTER_API_KEY`.
 
 ### 3. Turn auto save on
 
@@ -68,16 +66,10 @@ The package exposes two commands: `%ai` and `%%ai`. These are so-called ‘line�
 The command `%ai` processes what comes after on the same line as request to the LLM:
 
 ``` python
-%ai What is aimagics?
+%ai What is aimagics, briefly?
 ```
 
-**`aimagics`** is a Python package and IPython extension that brings Large Language Model (LLM) capabilities directly into Jupyter notebooks via magic commands.
-
-### Key Features:
-
-- **Magic Commands**: Offers `%ai` (line magic) and `%%ai` (cell magic) to interact with models directly within code cells.
-- **Context-Aware**: Reads the current notebook state from disk to provide context-aware responses to your code and markdown.
-- **Broad Model Support**: Built on [LiteLLM](https://models.litellm.ai/), allowing you to connect to OpenRouter, OpenAI, Anthropic, and dozens of other LLM providers.
+`aimagics` is a package that enables easy access to Large Language Models (LLMs) directly from within Jupyter notebooks using magic commands (`%ai` and `%%ai`). It allows users to interact with LLMs for coding assistance, learning, and exploration, leveraging the context of the current notebook session. This setup provides targeted responses, facilitates learning, and aims to enrich the interactive experience within Jupyter environments.
 
 ### Cell magic
 
@@ -122,22 +114,16 @@ The possible configuration options can be viewed with
     ----------------------
     AIMagics.model=<Unicode>
         Provider/model to be used.
-        Current: 'openrouter/openai/gpt-oss-120b'
+        Current: 'openrouter/deepseek/deepseek-flash-latest'
     AIMagics.system_prompt=<Unicode>
         The system prompt prepended to any prompt and context.
-        Current: "You are a helpful assistant living inside a user's Jupyter notebook. \n        Use markdown syntax for styling your responses.\n        Keep your responses brief and to the point.\n"
+        Current: 'You are a helpful assistant living inside a user\'s Jupyter notebook.\n    The user is generally interested in how things work, why, and to try them out immediately.\n    Use markdown syntax for styling your responses.\n    Keep your responses brief and to the point, they should fit in a few cells at most.\n    Your response will be post-processed: Fenced code will be split out and appended at the end as code cells.\n\nFollow the **fast.ai coding style**.\nIts core philosophy stems from Kenneth Iverson\'s maxim: *"Brevity facilitates reasoning."* By minimizing unnecessary vertical space, developers can see entire functions or algorithms in a single screen view without scrolling.\n\nThe key tenets include:\n\n---\n\n### Layout and Vertical Economy\n\n* **One Line, One Idea:** Fit complete simple statements onto a single line rather than breaking them across multiple lines.\n* Single-statement conditions: `if not data: return None`\n* Single-line functions: `def foo(x): return x * 2`\n* Single-line imports: `import os, sys, pathlib`\n\n* **No Artificial Line Breaks:** Don\'t split argument lists, list literals, or dictionary definitions across vertical lines unless they genuinely exceed horizontal space.\n* **Destructuring Assignment:** Group `self` attribute initializers together:\n```python\nself.x, self.y, self.z = x, y, z\n```\n\n* **Wide Screens Over 79/88 Chars:** Fast.ai allows line lengths around **160 characters** to accommodate modern monitors rather than adhering to rigid, narrow limits.\n* **Visual Alignment:** Group related 1-liners without blank lines between them, and align similar statement structures so the eye spots pattern differences immediately.\n\n---\n\n### Naming and Abbreviations\n\nFast.ai uses a combination of **Huffman Coding** and the **Life-Cycle Naming Principle**:\n\n| Scope / Lifecycle | Rule | Examples |\n| --- | --- | --- |\n| **Short-lived** (lambdas, list comprehensions, tight loops) | Aggressive 1-2 letter abbreviations | `x` (input), `y` (target), `o` (generic object), `i` (index), `f` (function) |\n| **Medium-lived** (local variables, function arguments) | Standard domain abbreviations | `lr` (learning rate), `bs` (batch size), `sz` (size), `tfms` (transforms) |\n| **Long-lived** (public classes, exported modules) | Full words, light or no abbreviations | `Learner`, `DataLoaders`, `Transform` |\n\n---\n\n### Systematic Affixes\n\nFast.ai relies on uniform affixes across the entire library:\n\n* **Plurals / Collections (`s`):** `xs`, `ys`, `tfms`\n* **Counts (`n_` or `num_`):** `n_epochs`, `n_layers`, `num_features`\n* **Boolean checks (`is_`):** `is_tuple`, `is_valid`\n* **Conversions (`2` / `to_`):** `to_device()`, `name2idx()`\n\n---\n\n### Idioms & Performance\n\n* **Vectorization Over Loops:** Rely on PyTorch/NumPy broadcasting and tensor indexing rather than Python loops.\n* **Domain-Specific Spacing:** Match mathematical notation. Omit spaces around operators where tight grouping reflects arithmetic priority or domain convention (e.g., `path/filename` without padding `/`).\n* **No Generic Auto-Formatters:** Traditional tools like Black or Flake8 violate fast.ai\'s density principles and are intentionally avoided in fastai projects.\n'
 
 For example, you can change the model with
 
 ``` python
-%config AIMagics.model = "openrouter/google/gemini-3.8-flash"
+%config AIMagics.model = "google/gemini-3.8-flash"
 ```
-
-``` python
-%ai what model are you?
-```
-
-I am **Gemini** (specifically configured as `openrouter/google/gemini-3.8-flash`), a large language model trained by Google.
 
 ### Documentation
 

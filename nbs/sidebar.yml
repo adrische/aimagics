@@ -5,3 +5,4 @@ website:
       - 0_core.ipynb
       - 1_utils.ipynb
       - 9_system_prompt.ipynb
+      - test.ipynb
