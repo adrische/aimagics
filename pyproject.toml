@@ -18,6 +18,7 @@ classifiers = [
 dependencies = [
     "fastcore>=2.2.19",
     "IPython",
+    "requests",
     "nbformat>=5.11.1",
     "ipynbname>=2025.8.0.0",
     "traitlets>=5.14.3",
