@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://adrische.github.io/aimagics/utils.html</loc>
+    <lastmod>2026-11-25T11:56:46.123Z</lastmod>
+  </url>
+  <url>
+    <loc>https://adrische.github.io/aimagics/messages.html</loc>
+    <lastmod>2026-11-25T11:56:46.460Z</lastmod>
+  </url>
+<url>
+    <loc>https://adrische.github.io/aimagics/index.html</loc>
+    <lastmod>2026-11-25T11:56:46.627Z</lastmod>
+  </url>
+<url>
+    <loc>https://adrische.github.io/aimagics/core.html</loc>
+    <lastmod>2026-11-25T11:56:46.137Z</lastmod>
+  </url>
+<url>
+    <loc>https://adrische.github.io/aimagics/system_prompt.html</loc>
+    <lastmod>2026-11-25T11:56:46.068Z</lastmod>
+  </url>
+</urlset>
