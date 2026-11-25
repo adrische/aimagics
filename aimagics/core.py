@@ -13,6 +13,7 @@ import nbformat, ipynbname, os, warnings, requests, json
 from traitlets import Unicode
 from .systemprompt import sp
 from .utils import split_into_cells, add_cells
+from .messages import cell2msg, text_content, msg
 
 # %% ../nbs/0_core.ipynb #c93523a0
 @magics_class
@@ -50,14 +51,19 @@ class AIMagics(Magics):
         """
         line = line or ""
         prompt = line if cell is None else f"{line}\n{cell}".strip()
+
+        # now ctx are cells
+        ctx = get_context() # TODO tools
+        input_msgs = [cell2msg(cell) for cell in ctx]
+        final_prompt = input_msgs + [msg([text_content(prompt)])]
+
         try: agentsmd = open(os.path.join(os.path.dirname(ipynbname.path()), "AGENTS.md")).read()
         except: agentsmd = ""
-        ctx = get_context() # TODO correct and better message history, TODO handle system prompt correctly, TODO tools
-        final_prompt = "\n".join([self.system_prompt, agentsmd, ctx, prompt])
+        instructions = "\n".join([self.system_prompt, agentsmd])
 
         h = display(Markdown('Processing request ...'), display_id=True) # Placeholder text
         accum = ""
-        async for delta in stream_with_error_handling(final_prompt, self.model):
+        async for delta in stream_with_error_handling(final_prompt, self.model, instructions):
             accum += delta
             h.update(Markdown(accum))
 
@@ -114,15 +120,17 @@ def get_context():
         # there may be an error matching cells that have been modified by line_magic_quotes / cell_magic_dummy_character
         if cell['source'] == source_of_calling_cell or normalize(cell['source']) == normalized_source:
             break
-    ctx = "\n".join([repr(cell) for cell in nb['cells'][:i+1]])
+    # ctx = "\n".join([repr(cell) for cell in nb['cells'][:i+1]])
+    ctx = nb['cells'][:i+1]
     return ctx
 
 # %% ../nbs/0_core.ipynb #508602ef
-async def stream_with_error_handling(prompt, model):
+async def stream_with_error_handling(prompt, model, instructions):
+    # https://openrouter.ai/docs/api_reference/streaming#code-examples
     response = requests.post(
         'https://openrouter.ai/api/v1/responses',
         headers={'Authorization': f'Bearer {os.environ['OPENROUTER_API_KEY']}'},
-        json={'model': model, 'input': prompt, 'stream': True},
+        json={'model': model, 'instructions': instructions, 'input': prompt, 'stream': True},
         stream=True
     )
 
